@@ -18,7 +18,7 @@
             "name": "Kieren Eaton",
             "email": "circledev@gmail.com",
             "role": "Developer"
-        },
+        }
     ],
     "require": {
         "yiisoft/yii2": "~2.0.0"

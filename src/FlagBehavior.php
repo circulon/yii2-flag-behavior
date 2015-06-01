@@ -2,27 +2,66 @@
 /**
  *
  * @author Kieren Eaton <circledev@gmail.com>
- *
- * Date: 22.06.14
+ * @copyright Copyright &copy; Kieren Eaton, 2015
+ * @version 1.0.0
  */
-namespace circulon\flags;
+namespace circulon\flag;
 
 use yii\base\Behavior;
-//use yii\db\ActiveRecord;
-//use yii\db\Query;
-
 
 class FlagBehavior extends Behavior
 {
     /**
-     * @var string
+     * @inheritdoc
      */
-    public $attribute = 'flags';
+    public $attributes = [];
 
     /**
-     * @var array
+     * @var string
      */
-    public $flags = array();
+    public $flagsAttribute = 'flags';
+
+
+    /**
+     * @inheritdoc
+     */
+    public function canGetProperty($name, $checkVars = true)
+    {
+        if (isset($this->attributes[$name])) {
+            return true;
+        }
+
+        return parent::canGetProperty($name, $checkVars);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __get($name)
+    {
+        $flag = $this->flagValue($name);
+        return ($this->owner->{$this->flagsAttribute} & $flag) === $flag;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function canSetProperty($name, $checkVars = true)
+    {
+        if (isset($this->attributes[$name])) {
+            return true;
+        }
+
+        return parent::canSetProperty($name, $checkVars);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __set($name, $value)
+    {
+        $this->setFlag($name,$value);
+    }
 
     /**
      * setFlag function.
@@ -32,50 +71,16 @@ class FlagBehavior extends Behavior
      */
     public function setFlag($name, $value = true)
     {
-        $flags = $this->owner->{$this->attribute};
-        $flagValue = $this->getFlagValue($name);
+        $currentFlags = $this->owner->{$this->flagsAttribute};
+        $flagValue = $this->flagValue($name);
 
         if ($value) {
-            $this->owner->{$this->fieldName} = $flags | $flagValue;
+            $this->owner->{$this->flagsAttribute} = $currentFlags | $flagValue;
         } else {
-            $this->owner->{$this->fieldName} = $flags & $flagValue
-                ? $flags ^ $flagValue
-                : $flags;
+            $this->owner->{$this->flagsAttribute} = ($currentFlags & $flagValue)
+                ? $currentFlags ^ $flagValue
+                : $currentFlags;
         }
-    }
-
-    /**
-     * Unset specified flag value
-     * Could use both clearFlag(User::SETTINGS_ENABLED) or setFlag(User::SETTINGS_ENABLED, false)
-     * @param $name
-     */
-    public function clearFlag($name)
-    {
-        $this->setFlag($name, false);
-    }
-
-    /**
-     * Is specified flag set?
-     * @param $name
-     * @return bool
-     */
-    public function hasFlag($name)
-    {
-        $flag = $this->getFlagValue($name);
-        return ($this->owner->{$this->fieldName} & $flag) === $flag;
-    }
-
-    /**
-     * Get flag index (bit's order) in collection
-     * @param $name
-     * @return int
-     * @throws CException
-     */
-    public function getFlagIndex($name)
-    {
-        if (!isset($this->flags[$name]))
-           throw new \yii\base\UnknownPropertyException("attribute not found" );
-        return $this->flags[$name];
     }
 
     /**
@@ -83,48 +88,9 @@ class FlagBehavior extends Behavior
      * @param $name
      * @return number
      */
-    public function getFlagValue($name)
+    private function flagValue($name)
     {
-        return pow(2,$this->getFlagIndex($name));
-    }
-
-    /**
-     * Search by flags
-     * @param $flags
-     * @return CActiveRecord
-     */
-    public function scopeFlags($flags)
-    {
-        if (is_array($flags)) {
-            $flags = $this->mergeFlags($flags);
-        }
-
-
-        $this->owner->getDbCriteria()->mergeWith(array(
-            'condition'=>$this->fieldName.' & :flag = :flag',
-            'params' => array(':flag' => $flags),
-        ));
-        $this->owner->getDbCriteria()->params[':flag'] = $flags;
-
-        return $this->owner;
-    }
-
-    /**
-     * @param array|string $flags
-     * @return CDbCriteria
-     */
-    public function getFlagCriteria($flags)
-    {
-        if (is_array($flags)) {
-            $flags = $this->mergeFlags($flags);
-        }
-
-        $paramId = ':flag' . ++CDbCriteria::$paramCount;
-        $criteria = new CDbCriteria();
-        $criteria->addCondition($this->fieldName . " & {$paramId} = {$paramId}");
-        $criteria->params[$paramId] = $flags;
-
-        return $criteria;
+        return pow(2,$this->attributes[$name]);
     }
 
     /**

@@ -1,7 +1,5 @@
 <?php
 /**
- *
- * @author Kieren Eaton <circledev@gmail.com>
  * @copyright Copyright &copy; Kieren Eaton, 2015
  * @version 1.0.0
  */
@@ -9,6 +7,9 @@ namespace circulon\flag;
 
 use yii\base\Behavior;
 
+/**
+ * @author Kieren Eaton <circledev@gmail.com>
+ */
 class FlagBehavior extends Behavior
 {
     /**

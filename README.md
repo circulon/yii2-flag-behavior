@@ -26,7 +26,6 @@ In MySQL (I have not used other DB) we can use TINYINT, SMALLINT, MEDIUMINT, INT
 Generally TINYINT(8) or SMALLINT(16) are a good starting point, this also reduces the overhead in your DB.
 
 ## Usage
-### Add behavior to the model
 
 > IMPORTANT: attribute names MUST be unique to the model as per standard attribute naming
 
@@ -35,7 +34,10 @@ Please check your order before you insert for the first time.
 
 > Additional flags can be added without issue 
 
+### Add behavior to the model
 ```php
+    use circulon\flag\FlagBehavior;
+
     // Recommended to use constants for 
     // virtual attribute names
     const SETTINGS_ACTIVE = 'active';

@@ -26,7 +26,6 @@ In MySQL (I have not used other DB) we can use TINYINT, SMALLINT, MEDIUMINT, INT
 Generally TINYINT(8) or SMALLINT(16) are a good starting point, this also reduces the overhead in your DB.
 
 ## Usage
-### Add behavior to the model
 
 > IMPORTANT: attribute names MUST be unique to the model as per standard attribute naming
 
@@ -35,7 +34,10 @@ Please check your order before you insert for the first time.
 
 > Additional flags can be added without issue 
 
+### Add behavior to the model
 ```php
+    use circulon\flag\FlagBehavior;
+
     // Recommended to use constants for 
     // virtual attribute names
     const SETTINGS_ACTIVE = 'active';
@@ -48,10 +50,13 @@ Please check your order before you insert for the first time.
             'FlagBehavior'=> [
                 'class'=> FlagBehavior::className(),
                 'fieldattribute' => 'flags', // optional 
+                // attributes:  are key => value pairs where
+                //    the key is the attribute name and the 
+                //    value is the bit position (starting at 0)
                 'attributes' => [ 
                     $this::SETTINGS_ACTIVE => 0,  // The index order once set
                     $this::SETTINGS_ADMIN => 1,   // MUST NOT BE CHANGED 
-                    $this::SETTINGS_POST_COMMENTS => 2,
+                    $this::SETTINGS_POST_COMMENTS => 2, // after any records have been inserted
                 ],
             ],
         ];
@@ -59,14 +64,19 @@ Please check your order before you insert for the first time.
 ```    
 
 ### Access
+
+> NOTE: it is recommended to use constants for attribute names. 
+Should you decide to change the attribute name (not the position) this will then
+be used in all models accessing the flags. 
+
 ```php
     // get/set db attribute directly
     $value = $model->fieldAttribute;  // initialy set to 0 
     $model->fieldAttribute = 6; // set flags to admin and post comments (110)
 
     // change flags
-    // NOTE: it is recommended to use the model constants for attribute
-    // name expansion. this will 
+    // NOTE: 
+    // 
     $model->{<class name>::SETTINGS_ACTIVE} = true; // set flag (now 111)
     $model->active = true; 
     $model->setFlag({<class name>::SETTINGS_ADMIN}, false); // clear flag (now 101)

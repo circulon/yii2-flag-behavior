@@ -27,7 +27,7 @@ class FlagBehavior extends Behavior
      */
     public function canGetProperty($name, $checkVars = true)
     {
-        if (isset($this->attributes[$name])) {
+        if (isset($this->attributes[$name]) || ($name === $this->flagsAttribute)) {
             return true;
         }
 
@@ -39,6 +39,10 @@ class FlagBehavior extends Behavior
      */
     public function __get($name)
     {
+        if ($name === $this->flagsAttribute) {
+          return $this->owner->{$this->flagsAttribute};
+        }
+
         $flag = $this->flagValue($name);
         return ($this->owner->{$this->flagsAttribute} & $flag) === $flag;
     }
@@ -48,7 +52,7 @@ class FlagBehavior extends Behavior
      */
     public function canSetProperty($name, $checkVars = true)
     {
-        if (isset($this->attributes[$name])) {
+        if (isset($this->attributes[$name]) || ($name === $this->flagsAttribute)) {
             return true;
         }
 
@@ -60,6 +64,11 @@ class FlagBehavior extends Behavior
      */
     public function __set($name, $value)
     {
+        if ($name === $this->flagsAttribute) {
+          $this->owner->{$this->flagsAttribute} = $value;
+          return;
+        }
+
         $this->setFlag($name,$value);
     }
 

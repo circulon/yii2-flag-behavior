@@ -22,6 +22,10 @@ class FlagBehavior extends Behavior
      */
     public $flagsAttribute = 'flags';
 
+    /**
+     * @var array
+     */
+    public $options = [];
 
     /**
      * @inheritdoc
@@ -70,7 +74,8 @@ class FlagBehavior extends Behavior
           return;
         }
 
-        $this->setFlag($name,$value);
+        $this->setFlag($name, (bool)$value);
+        $this->processOptions($name, (bool)$value);
     }
 
     /**

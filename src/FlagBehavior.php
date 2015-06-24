@@ -108,6 +108,39 @@ class FlagBehavior extends Behavior
         return pow(2,$this->attributes[$name]);
     }
 
+    private function processOptions($name, $value)
+    {
+      if (!isset($this->options[$name])) { return; }
+
+      // options: $flag => $options
+      //    $flag : the source attribute
+      //    $options : an array of $operator => $fields
+      //      $operator : (set|clear|not)
+      //        set: sets the attribute to a given value (true|false|'source')
+      //          'source' will set the attribute to the same as the source ttributes value
+      //          if only the attribute name is provided the attribute is set to true
+      //
+      //        clear: clears the attributes listed
+      //        not: sets the value of the attributes to the inverse/complement of the source attribute
+
+      $options = $this->options[$name];
+      foreach ($options as $opt => $otherFlags)
+      {
+        foreach ( $otherFlags as $flagKey => $flagValue)
+        {
+          $newValue = true;
+          if ($opt === 'set') {
+            if (!is_int($flagKey)) {
+              $newValue = ($flagValue === 'source')? $value : $flagValue;
+            }
+          } else {
+            $newValue = ($opt === 'clear') ? false : !$value;
+          }
+          $this->setFlag($aFlag, $newValue);
+        }
+      }
+    }
+
     /**
      * Get combined flags value
      * @param $flags

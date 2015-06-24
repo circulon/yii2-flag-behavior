@@ -6,6 +6,7 @@
 namespace circulon\flag;
 
 use yii\base\Behavior;
+use yii\validators\Validator;
 
 /**
  * @author Kieren Eaton <circledev@gmail.com>
@@ -26,6 +27,17 @@ class FlagBehavior extends Behavior
      * @var array
      */
     public $options = [];
+
+    /**
+     * @inheritdoc
+     */
+    public function attach($owner)
+    {
+        parent::attach($owner);
+        $validators = $owner->validators;
+        $validator = Validator::createValidator('safe', $owner, array_keys($this->attributes));
+        $validators->append($validator);
+    }
 
     /**
      * @inheritdoc

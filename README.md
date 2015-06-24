@@ -43,20 +43,47 @@ Please check your order before you insert for the first time.
     const SETTINGS_ACTIVE = 'active';
     const SETTINGS_ADMIN = 'admin';
     const SETTINGS_POST_COMMENTS = 'postComments';
-
+    const SETTINGS_VIEW_REPORTS = 'voewReports';
+    const SETTINGS_CREATE_REPORTS = 'createReports';
+    
     public function behaviors()
     {
         return [
             'FlagBehavior'=> [
                 'class'=> FlagBehavior::className(),
-                'fieldattribute' => 'flags', // optional 
-                // attributes:  are key => value pairs where
-                //    the key is the attribute name and the 
-                //    value is the bit position (starting at 0)
+                'fieldattribute' => 'flags', // the db field attribute. Default : 'flags'
+                // attributes:  $flag => $position 
+                //    $flag : the attribute name  
+                //    $position : the bit position (starting at 0)
                 'attributes' => [ 
-                    $this::SETTINGS_ACTIVE => 0,  // The index order once set
+                    $this::SETTINGS_ACTIVE => 0,  // The bit position order once set
                     $this::SETTINGS_ADMIN => 1,   // MUST NOT BE CHANGED 
                     $this::SETTINGS_POST_COMMENTS => 2, // after any records have been inserted
+                ],
+                // options: $flag => $options
+                //    $flag : the source attribute  
+                //    $options : an array of $operator => $fields
+                //      $operator : (set|clear|not)
+                //        set: sets the attribute to a given value (true|false|'source')
+                //          'source' will set the attribute to the same as the source ttributes value 
+                //          if only the attribute name is provided the attribute is set to true
+                //
+                //        clear: clears the attributes listed
+                //        not: sets the value of the attributes to the inverse/complement of the source attribute 
+                 
+                'options' = [
+                  $this::SETTINGS_ADMIN => [ 
+                    'set' => [
+                      $this::SETTINGS_POST_COMMENTS, // set to true
+                      $this::SETTINGS_ACTIVE, // set to true
+                    ]
+                  ],
+                  $this::SETTINGS_ACTIVE => [
+                    'set' => [ $this::SETTINGS_POST_COMMENTS => 'source' ], // set same as SETTINGS_ACTIVE
+                  ],
+                  $this::SETTINGS_CREATE_REPORTS => [
+                    'set' => [ $this::SETTINGS_VIEW_REPORTS], 
+                  ],
                 ],
             ],
         ];
@@ -93,6 +120,7 @@ be used in all models accessing the flags.
     if ($model->hasFlag({<class name>::SETTINGS_ADMIN})) {
         // allow admin user to ....
     }
+    
   
 ```
     

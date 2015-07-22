@@ -124,4 +124,60 @@ be used in all models accessing the flags.
   
 ```
     
-    
+### Searching
+
+You can simply add criteria for your model/s flags
+
+> NOTE: This may seem a little backwards (ie creating an empty model).
+   but when creating multi model queries this is the simplest method. 
+If you have a better or simpler method, let me know or send a pull request.
+
+
+Example 1 -- Single model search
+
+```php
+
+  // 
+  
+  $model = new MyModelWithFlags()
+  $query = MyModelWithFlags::find();
+  // add additional criteria as required
+  $query = $model->addFlagsCriteria($query, [
+    MyModelWithFlags::SETTING_ACTIVE,  //  Flags with no value are assumed true
+    MyModelWithFlags::SETTING_VIEW_REPORTS => false // optionally set the specific (bool or int 1/0) search value
+  ]);
+  // get records
+  $query->all();
+  // DataProvider
+  $dataProvider = new ActiveDataProvider(['query' => $query]);
+
+```  
+
+Example 2 -- Complex (multi-model) search
+
+```php
+
+  $searchQuery = PrimarySearchModel::find();
+  // add criteria....
+  
+  $model = new MyModelWithFlags()
+  $searchQuery = $model->addFlagsCriteria($searchQuery, [
+    MyModelWithFlags::SETTING_ACTIVE,  //  Flags with no value are assumed true
+    MyModelWithFlags::SETTING_VIEW_REPORTS => false // optionally set the specific (bool or int 1/0) search value
+  ], true); // generate tablename prefixes
+  
+  $otherModel = new MyOtherModelWithFlags()
+  // add additional criteria as required
+  $searchQuery = $otherModel->addFlagsCriteria($searchQuery, [
+    MyOtherModelWithFlags::SETTING_OTHER => true,  
+    MyOtherModelWithFlags::SETTING_SOME_SETTING => false, 
+    MyOtherModelWithFlags::SETTING_WORKING,
+  ], true); // generate tablename prefixes
+  
+  // get records
+  $searchQuery->all();
+  // DataProvider
+  $dataProvider = new ActiveDataProvider(['query' => $searchQuery]);
+  
+```
+   

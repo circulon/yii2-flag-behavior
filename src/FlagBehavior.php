@@ -154,6 +154,49 @@ class FlagBehavior extends Behavior
     }
 
     /**
+     * @param ActiveQuery $query
+     * @param array|string $flags
+     * @param bool $prefixTablename
+     * @return ActiveQuery
+     */
+    public function addFlagsCriteria($query, $flags, $prefixTablename = false)
+    {
+        if (!is_array($flags)) {
+            $flags = [$flags];
+        }
+
+        $trueFlags = [];
+        $falseFlags = [];
+
+        foreach($flags as $key => $value)
+        {
+          if ((isset($this->attributes[$key])) && ((bool)$value === false)) {
+            $falseFlags[] = $this->attributes[$key];
+          } else {
+            if (isset($this->attributes[$key])) {
+              $trueFlags[] = $this->attributes[$key];
+            } else {
+              $trueFlags[] = $this->attributes[$value];
+            }
+          }
+        }
+
+        $table = ($prefixTablename) ? $this->owner->tableName().'.' : '';
+
+        if (!empty($trueFlags)) {
+          $value = $this->mergeFlags($trueFlags);
+          $query->andWhere($table."[[{$this->flagsAttribute}]] & :tvalue", [':tvalue' => $value]);
+        }
+
+        if (!empty($falseFlags)) {
+          $value = $this->mergeFlags($falseFlags);
+          $query->andWhere('!('.$table."[[{$this->flagsAttribute}]] & :fvalue)", [':fvalue' => $value]);
+        }
+
+        return $query;
+    }
+
+    /**
      * Get combined flags value
      * @param $flags
      * @return int

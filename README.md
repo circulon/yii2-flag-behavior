@@ -1,7 +1,7 @@
 yii2-flag-behavior
 ==================
 
-Yii 2.x behavior for managing multiple (virtual) boolean attributes stored as a a single attribute in a model.
+Yii 2.x behavior for managing multiple (virtual) boolean attributes stored as a single integer attribute in a model.
 
 ## Installation
 

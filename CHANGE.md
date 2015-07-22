@@ -1,3 +1,9 @@
+version 1.2.0
+=============
+**Date:** 23-July-2015
+
+- (enh) Add search criteria to an existing ActiveQuery 
+
 version 1.1.1
 =============
 **Date:** 24-June-2015

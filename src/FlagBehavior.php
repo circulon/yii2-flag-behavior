@@ -110,6 +110,31 @@ class FlagBehavior extends Behavior
         }
     }
 
+    public function searchFilterList($state = null)
+    {
+      $attribs = $this->flagsList($state);
+      $list = [];
+
+      foreach ($attribs as $key => $dummy)
+      {
+        $list[$key] = $this->owner->getAttributeLabel($key);
+      }
+
+      return $list;
+    }
+
+    public function flagsList($state = null, $values = false)
+    {
+      $list = [];
+      foreach ($this->attributes as $key => $pos)
+      {
+        if (($state === null) || ($this->{$key} === $state)) {
+          $list[$key] = ($values) ? (string)$this->flagValue($key) : $this->{$key};
+        }
+      }
+      return $list;
+    }
+
     /**
      * @param ActiveQuery $query
      * @param array|string $flags

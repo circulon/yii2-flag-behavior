@@ -110,6 +110,15 @@ class FlagBehavior extends Behavior
         }
     }
 
+
+    /**
+     * Get a list of flags suitable for use in dropdownlists
+     * and gridview search filter dropdown lists
+     *
+     * @access public
+     * @param mixed $state (default: null)
+     * @return void
+     */
     public function searchFilterList($state = null)
     {
       $attribs = $this->flagsList($state);
@@ -123,6 +132,14 @@ class FlagBehavior extends Behavior
       return $list;
     }
 
+    /**
+     * flagsList function.
+     *
+     * @access public
+     * @param mixed $state (default: null)
+     * @param bool $values (default: false)
+     * @return void
+     */
     public function flagsList($state = null, $values = false)
     {
       $list = [];

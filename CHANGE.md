@@ -2,6 +2,12 @@ version 1.2.1
 =============
 **Date:** 23-July-2015
 
+- (fix) options not being set correctly under certain conditions
+
+version 1.2.1
+=============
+**Date:** 23-July-2015
+
 - (fix) corrected bound parameters being overwritten in multi model queries
 
 version 1.2.0

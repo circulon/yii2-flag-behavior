@@ -205,9 +205,17 @@ class FlagBehavior extends Behavior
         return pow(2,$this->attributes[$name]);
     }
 
-    private function processOptions($name, $value)
+    /**
+     * processOptions function.
+     *
+     * @access private
+     * @param mixed $sourceKey
+     * @param mixed $sourceValue
+     * @return void
+     */
+    private function processOptions($sourceKey, $sourceValue)
     {
-      if (!isset($this->options[$name])) { return; }
+      if (!isset($this->options[$sourceKey])) { return; }
 
       // options: $flag => $options
       //    $flag : the source attribute
@@ -220,20 +228,22 @@ class FlagBehavior extends Behavior
       //        clear: clears the attributes listed
       //        not: sets the value of the attributes to the inverse/complement of the source attribute
 
-      $options = $this->options[$name];
-      foreach ($options as $opt => $otherFlags)
+      $options = $this->options[$sourceKey];
+      foreach ($options as $operator => $otherFlags)
       {
+        $otherFlags = (is_string($otherFlags)) ? [$otherFlags] : $otherFlags;
         foreach ( $otherFlags as $flagKey => $flagValue)
         {
           $newValue = true;
-          if ($opt === 'set') {
+          if ($operator === 'set') {
             if (!is_int($flagKey)) {
-              $newValue = ($flagValue === 'source')? $value : $flagValue;
+              $newValue = ($flagValue === 'source') ? $sourceValue : $flagValue;
             }
           } else {
-            $newValue = ($opt === 'clear') ? false : !$value;
+            $newValue = ($operator === 'clear') ? false : !$sourceValue;
           }
-          $this->setFlag($aFlag, $newValue);
+          $flagKey = (is_int($flagKey)) ? $flagValue : $flagKey;
+          $this->setFlag($flagKey, $newValue);
         }
       }
     }
